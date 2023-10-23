@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
-const discoverySchema = new Schema({
+const musikSchema = new Schema({
     originalName: {
         type: String,
         required: true
@@ -17,20 +17,20 @@ const discoverySchema = new Schema({
         type: String,
         required: true
     },
-    batesNumbers: {
-        type: [String],
-        required: false
-    },
-    batesIndices: {
-        type: [Number],
-        required: false
-    },
-    batesPrefix: {
+    givenName: {
         type: String,
         required: false
     },
-    text: {
+    description: {
         type: String,
+        required: false
+    },
+    plays: {
+        type: Number,
+        required: false
+    },
+    length: {
+        type: Number,
         required: false
     },
     size: {
@@ -39,4 +39,4 @@ const discoverySchema = new Schema({
     }
 }, { timestamps: true })
 
-module.exports = mongoose.model("Discovery", discoverySchema);
+module.exports = mongoose.model("Musik", musikSchema);

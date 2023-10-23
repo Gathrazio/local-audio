@@ -26,7 +26,7 @@ const conn = mongoose.createConnection(process.env.MONGO_URL, {
     useNewUrlParser: true,
 })
 
-let gfs, gridfsBucket;
+let gridfsBucket;
 
 conn.on('error', (err) => {
     console.error('MongoDB connection error:', err)
@@ -36,10 +36,8 @@ conn.once('open', async () => {
     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
         bucketName: 'm'
     })
-    // gfs = Grid(conn.db, mongoose.mongo);
-    // gfs.collection('discofiles');
     console.log('MongoDB connection open');
-    })
+})
 
 const storage = new GridFsStorage({ 
     url: "mongodb://localhost:27018/music",
