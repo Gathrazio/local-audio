@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const multer = require('multer')
 const {GridFsStorage} = require('multer-gridfs-storage')
 const Grid = require('gridfs-stream')
-const Discovery = require('./models/Discovery.js')
+const Musik = require('./models/Musik.js')
 const { MongoClient, ObjectId } = require('mongodb')
 const app = express();
 const morgan = require('morgan');
@@ -18,7 +18,7 @@ const { expressjwt: jwt } = require('express-jwt');
 app.use(morgan('dev'))
 app.use(express.json())
 
-const promise = mongoose.connect("mongodb://localhost:27017/discofiles").then(() => console.log('connected'))
+const promise = mongoose.connect("mongodb://localhost:27018/music").then(() => console.log('connected'))
 
 // const conn = mongoose.connection;
 const conn = mongoose.createConnection(process.env.MONGO_URL, {
@@ -34,7 +34,7 @@ conn.on('error', (err) => {
 
 conn.once('open', async () => {
     gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: 'd'
+        bucketName: 'm'
     })
     // gfs = Grid(conn.db, mongoose.mongo);
     // gfs.collection('discofiles');
@@ -52,7 +52,7 @@ const storage = new GridFsStorage({
                 const filename = buf.toString('hex') + path.extname(file.originalname);
                 const fileInfo = {
                     filename,
-                    bucketName: 'd'
+                    bucketName: 'm'
                 };
                 resolve(fileInfo)
             });
@@ -75,18 +75,17 @@ app.post('/api/protected/insert_file', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ errMsg: 'No file uploaded' });
     }
-    console.log(req.file)
-    const newDiscovery = new Discovery({
+    const newMusik = new Musik({
         originalName: req.file.originalname,
         gridId: req.file.id,
         gridFileName: req.file.filename,
         size: req.file.size
     })
-    newDiscovery.save()
-        .then(savedDiscovery => {
+    newMusik.save()
+        .then(savedMusik => {
             return res.status(201).send({
                 file: req.file,
-                savedDiscovery
+                savedMusik
             })
         })
         .catch(err => {
