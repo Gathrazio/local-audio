@@ -23,7 +23,7 @@ userAxios.interceptors.request.use(config => {
 export default function AddPage() {
 
     const [processUndergoing, setProcessUndergoing] = useState<boolean>(false);
-    const [finishedProcesses, setFinishedProcesses] = useState<Array<FinalDiscovery>>([])
+    const [finishedProcesses, setFinishedProcesses] = useState<Array<FinalMusik>>([])
     const [currentFile, setCurrentFile] = useState<{thisFile: File, fileSetIndex: number}>({thisFile: new File([""], ''), fileSetIndex: 0});
     const [fileSet, setFileSet] = useState<FileList | null>(null)
     const [currentPdfData, setCurrentPdfData] = useState<{data: Uint8Array} | null>(null)
@@ -32,7 +32,7 @@ export default function AddPage() {
 
 
 
-    interface DiscoveryType {
+    interface MusikType {
         file: {
             bucketName: 'd',
             chunkSize: number,
@@ -47,7 +47,7 @@ export default function AddPage() {
             size: number,
             uploadDate: Date
         },
-        savedDiscovery: {
+        savedMusik: {
             createdAt: Date,
             gridFileName: string,
             gridId: string,
@@ -58,7 +58,7 @@ export default function AddPage() {
         }
     }
 
-    interface FinalDiscovery {
+    interface FinalMusik {
         createdAt: Date,
         gridFileName: string,
         gridId: string,
@@ -98,7 +98,7 @@ export default function AddPage() {
 
     const buildProcessElements = (): Array<JSX.Element> => {
         const logEntryArray: Array<JSX.Element> = [];
-        (finishedProcesses as Array<FinalDiscovery>).forEach((discovery, i) => logEntryArray.push(<LogEntry discovery={discovery} currentFile={currentFile} becomeHighlighted={becomeHighlighted} processUndergoing={processUndergoing} key={i}/>))
+        (finishedProcesses as Array<FinalMusik>).forEach((musik, i) => logEntryArray.push(<LogEntry musik={musik} currentFile={currentFile} becomeHighlighted={becomeHighlighted} processUndergoing={processUndergoing} key={i}/>))
         return logEntryArray;
     }
 
@@ -123,25 +123,25 @@ export default function AddPage() {
         }
     }
 
-    const handleFileExtractAndUpdate = async (discoveryId: string): Promise<void | FinalDiscovery> => {
+    const handleFileExtractAndUpdate = async (discoveryId: string): Promise<void | FinalMusik> => {
         let formData = new FormData()
         formData.append('file', currentFile.thisFile as File)
         try {
-            const response = await userAxios.post(`/api/protected/document_manip/extract_and_update/${discoveryId}`, formData);
-            return response.data as FinalDiscovery;
+            const response = await userAxios.post(`/api/protected/document_manip/extract_and_update/${discoveryId}`, {});
+            return response.data as FinalMusik;
         } catch (err) {
             console.log(err)
         }
     }
 
-    const handleFileInsert = async (): Promise<void | DiscoveryType> => {
+    const handleFileInsert = async (): Promise<void | MusikType> => {
         let formData = new FormData()
         formData.append('file', currentFile.thisFile as File)
         try {
             const response = await userAxios.post('/api/protected/insert_file', formData, {
                 headers: { enctype: "multipart/form-data" }
             })
-            return response.data as DiscoveryType;
+            return response.data as MusikType;
         } catch (err) {
             console.error('File upload failed:', err)
         }
@@ -219,9 +219,9 @@ export default function AddPage() {
     }
 
     const processFile = async (): Promise<void> => {
-        const fileAndDiscoveryData: void | DiscoveryType = await handleFileInsert()
-        if (fileAndDiscoveryData) {
-            const updatedDocument: void | FinalDiscovery = await handleFileExtractAndUpdate(fileAndDiscoveryData.savedDiscovery._id)
+        const fileAndMusikData: void | MusikType = await handleFileInsert()
+        if (fileAndMusikData) {
+            const updatedDocument: void | FinalMusik = await handleFileExtractAndUpdate(fileAndMusikData.savedMusik._id)
             if (updatedDocument) {
                 setFinishedProcesses(prev => [...prev, updatedDocument])
                 if (currentFile.fileSetIndex != (fileSet as FileList).length - 1) {
